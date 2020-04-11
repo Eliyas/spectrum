@@ -219,6 +219,10 @@ export const SectionDescription = styled.p`
     color: ${theme.brand.alt};
     font-weight: 500;
   }
+
+  strong {
+    font-weight: 600;
+  }
 `;
 
 export const Highlight = styled.span`
@@ -263,9 +267,9 @@ export const PlanSection = styled.div`
   a {
     display: inline-block;
     align-self: center;
+    margin-top: 24px;
 
     button {
-      margin-top: 24px;
       padding: 8px 16px;
       font-size: 16px;
     }

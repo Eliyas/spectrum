@@ -29,6 +29,11 @@ export const Span = styled.span`
   position: relative;
 `;
 
+export const PopperWrapper = styled.div`
+  z-index: 6001;
+  ${props => props.popperStyle};
+`;
+
 export const ProfileCard = styled.div`
   width: 256px;
   background: ${theme.bg.default};
@@ -57,7 +62,7 @@ export const Username = styled.h3`
   margin-top: 4px;
 `;
 
-export const Description = styled.p`
+export const Description = styled.div`
   font-size: 14px;
   font-weight: 400;
   color: ${theme.text.secondary};

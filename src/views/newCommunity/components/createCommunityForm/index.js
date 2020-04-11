@@ -16,7 +16,10 @@ import type { CreateCommunityType } from 'shared/graphql/mutations/community/cre
 import { getCommunityBySlugQuery } from 'shared/graphql/queries/community/getCommunity';
 import { searchCommunitiesQuery } from 'shared/graphql/queries/search/searchCommunities';
 import { PrimaryOutlineButton } from 'src/components/button';
-import { CommunityHoverProfile } from 'src/components/hoverProfile';
+import {
+  whiteSpaceRegex,
+  oddHyphenRegex,
+} from 'src/views/viewHelpers/textValidationHelper';
 import Icon from 'src/components/icon';
 
 import {
@@ -124,7 +127,9 @@ class CreateCommunityForm extends React.Component<Props, State> {
       .replace(/-{2,}/g, '-');
     let slug = slugg(lowercaseName);
 
-    if (name.length > 20) {
+    let hasInvalidChars = name.search(whiteSpaceRegex) >= 0;
+    let hasOddHyphens = name.search(oddHyphenRegex) >= 0;
+    if (hasInvalidChars || hasOddHyphens || name.length > 20) {
       this.setState({
         nameError: true,
       });
@@ -275,7 +280,10 @@ class CreateCommunityForm extends React.Component<Props, State> {
 
   changeDescription = e => {
     const description = e.target.value;
-    if (description.length >= 140) {
+
+    let hasInvalidChars = description.search(whiteSpaceRegex) >= 0;
+    let hasOddHyphens = description.search(oddHyphenRegex) >= 0;
+    if (hasInvalidChars || hasOddHyphens || description.length >= 140) {
       this.setState({
         descriptionError: true,
       });
@@ -513,7 +521,10 @@ class CreateCommunityForm extends React.Component<Props, State> {
           </Input>
 
           {nameError && (
-            <Error>Community names can be up to 20 characters long.</Error>
+            <Error>
+              Community name has to be between 1 and 20 characters long and
+              can`t have invalid characters.
+            </Error>
           )}
 
           <UnderlineInput
@@ -552,21 +563,16 @@ class CreateCommunityForm extends React.Component<Props, State> {
               communitySuggestions.map(suggestion => {
                 return (
                   <Link to={`/${suggestion.slug}`} key={suggestion.id}>
-                    <CommunityHoverProfile
-                      id={suggestion.id}
-                      style={{ flex: '1 0 auto' }}
-                    >
-                      <CommunitySuggestion>
-                        <CommunityAvatar
-                          size={20}
-                          community={suggestion}
-                          isClickable={false}
-                          showHoverProfile={false}
-                        />
-                        <strong>{suggestion.name}</strong>{' '}
-                        {suggestion.metaData.members.toLocaleString()} members
-                      </CommunitySuggestion>
-                    </CommunityHoverProfile>
+                    <CommunitySuggestion>
+                      <CommunityAvatar
+                        size={20}
+                        community={suggestion}
+                        isClickable={false}
+                        showHoverProfile={false}
+                      />
+                      <strong>{suggestion.name}</strong>{' '}
+                      {suggestion.metaData.members.toLocaleString()} members
+                    </CommunitySuggestion>
                   </Link>
                 );
               })}
@@ -582,7 +588,8 @@ class CreateCommunityForm extends React.Component<Props, State> {
 
           {descriptionError && (
             <Error>
-              Oop, that’s more than 140 characters - try trimming that up.
+              Oops, there may be some invalid characters or the text is too big
+              (max: 140 characters) - try trimming that up.
             </Error>
           )}
 
